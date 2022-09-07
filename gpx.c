@@ -34,7 +34,7 @@ void write_gpx_track_point(FILE* output, const double latitude, const double lon
   time_t seconds = (time_t) floor(time);
   const double fraction = time - seconds;
 
-  const size_t n = strftime(s, sizeof s, "%FT%T", gmtime(&seconds));
+  const size_t n = strftime(s, sizeof s, "%Y-%m-%dT%H:%M:%S", gmtime(&seconds));
   if (n < sizeof(s))
     snprintf(s + n, (sizeof s)  - n, ".%03.0fZ", fraction * 1000);
 
