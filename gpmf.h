@@ -32,6 +32,16 @@ typedef struct gps_location {
   double speed_3d;
 } gps_location;
 
+typedef struct gps9_location {
+    gps_location gps5;
+    double days_since_2000;
+    double secs_since_midnight;
+    double dop;
+    double fix; // 0 = unknown, 1 = none, 2 = 2d, 3 = 3d, 4 = dgps, 5 = pps
+} gps9_location;
+
 gps_location* get_gps_Locations(GPMF_stream* ms, uint32_t* repeat);
+
+gps9_location* get_gps9_Locations(GPMF_stream* ms, uint32_t* repeat);
 
 #endif // GPMF_H

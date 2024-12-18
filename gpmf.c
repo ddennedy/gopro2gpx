@@ -80,4 +80,16 @@ gps_location* get_gps_Locations(GPMF_stream* ms, uint32_t* repeat)
     *repeat = data.repeat;
     return (gps_location*)data.buffer;
   }
+  return NULL;
+}
+
+gps9_location* get_gps9_Locations(GPMF_stream* ms, uint32_t* repeat)
+{
+  const scaled_data data = scaled_data_get(ms, GPMF_TYPE_DOUBLE);
+
+  if (data.elements != sizeof(struct gps9_location) / sizeof(double))
+      exit_with_error("Unexpected GPS9 record element count found");
+
+  *repeat = data.repeat;
+  return (gps9_location*)data.buffer;
 }

@@ -35,6 +35,7 @@
 #include "goprofilenames.h"
 #include "gpmf.h"
 #include <math.h>
+#include <time.h>
 
 typedef struct mp4_with_name {
   const char* file_name;
@@ -199,6 +200,40 @@ int main(const int argc, char* argv[])
                   }
                 }
 
+                free(locations);
+              }
+            }
+            // GPS9 was added in HERO11, required in HERO12+
+            else if (GPMF_OK == GPMF_FindNext(ms, STR2FOURCC("GPS9"), GPMF_RECURSE_LEVELS))
+            {
+              uint32_t samples;
+              gps9_location* locations = get_gps9_Locations(ms, &samples);
+              if (locations != NULL)
+              {
+                for (uint32_t i = 0; i < samples; i++)
+                {
+                  const double sample_time = in + (double)i / (double)samples * (out - in);
+                  const gps9_location location = locations[i];
+
+                  if (1 == location.fix) // none
+                     continue;
+
+                  update_average(location.gps5.latitude, &average.latitude, average_count);
+                  update_average(location.gps5.longitude, &average.longitude, average_count); // this is not a good way to average longitude but we don't care for now.
+                  update_average(location.gps5.elevation_wgs84, &average.elevation_wgs84, average_count);
+                  update_average(location.gps5.speed_ground, &average.speed_ground, average_count);
+                  update_average(location.gps5.speed_3d, &average.speed_3d, average_count);
+                  ++average_count;
+
+                  // if this sample is within 1/3 of a second of previous samples, average them and do not output.
+                  if (sample_time - average_start_time >= 1.0 / 3.0)
+                  {
+                    write_gpx_track_point(gpx, average.latitude, average.longitude, average.elevation_wgs84, average.speed_3d, average.speed_ground, sample_time);
+                    average = (const gps_location){ 0 };
+                    average_count = 0;
+                    average_start_time = sample_time;
+                  }
+                }
                 free(locations);
               }
             }
