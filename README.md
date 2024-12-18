@@ -1,9 +1,8 @@
-# UPDATE: this library relies on an older version of GoPro's gpmf-parser library and is probably currently broken.
-
 # gopro2gpx
 Michiel van Wessem
 Saturday, 20. July 2019 05:32PM 
 
+Support for HERO11+ cameras added by Dan Dennedy for use in [Shotcut](https://github.com/mltframework/shotcut)
 
 ## Introduction
 
